@@ -17,7 +17,7 @@ class Image_Classification_Dataset(Dataset):
             self.img_labels = np.array(train_df.iloc[:,2])
     def __len__(self):
         return len(self.img_labels)
-    def __get__item(self,idx):
+    def __getitem__(self,idx):
         image_path = self.img_dirs[idx]
         label = self.img_labels[idx]
         image = read_image(image_path)
