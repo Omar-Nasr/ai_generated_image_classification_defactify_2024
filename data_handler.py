@@ -22,6 +22,7 @@ class Image_Classification_Dataset(Dataset):
         label = self.img_labels[idx]
         image = read_image(image_path)
         image = image_processor(images=image,return_tensors="pt")['pixel_values'][0]
+        return image,label
 
 
 
