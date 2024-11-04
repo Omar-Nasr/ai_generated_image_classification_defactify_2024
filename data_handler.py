@@ -10,7 +10,7 @@ class Image_Classification_Dataset(Dataset):
         super().__init__()
         train_tsv_path = os.path.join(train_data_dir,"image_labels.tsv")
         train_df = pd.read_csv(train_tsv_path,sep="\t")
-        self.img_dirs = np.array(train_df.iloc[:,0])
+        self.img_dirs = np.array(train_df.iloc[:,0].apply(lambda x: x.replace("image_class/",train_data_dir)))
         if(task=="Binary"):
             self.img_labels = np.array(train_df.iloc[:,1])
         elif(task=="Multiclass"):
