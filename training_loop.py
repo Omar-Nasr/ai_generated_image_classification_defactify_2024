@@ -32,7 +32,7 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                     _,preds = torch.max(outputs,1)
                     full_preds.append(preds)
                     full_labels.append(labels)
-                    loss = criterion(labels)
+                    loss = criterion(outputs,labels)
                     loss.backward()
                     optimizer.step()
                     running_loss += loss.item() * inputs.size(0)
