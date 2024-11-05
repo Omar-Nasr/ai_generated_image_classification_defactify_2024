@@ -21,6 +21,7 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
             model.train()
             full_preds = []
             full_labels = []
+            k=1
             for inputs,labels in train_dataloader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -36,6 +37,8 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                     loss.backward()
                     optimizer.step()
                     running_loss += loss.item() * inputs.size(0)
+                print(f"Batch {k} loss: {running_loss}" )
+                k+=1
             full_preds = np.concatenate(full_preds)
             full_labels = np.concatenate(full_labels)
             curr_f1 = Calc_F1(full_preds,full_labels)
