@@ -19,6 +19,8 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
             f.write('-' * 10 + "\n")
             print('-' * 10 + "\n")
             model.train()
+            model.to(device)
+            classifier.to(device)
             full_preds = []
             full_labels = []
             k=1
