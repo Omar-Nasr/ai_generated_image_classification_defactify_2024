@@ -42,7 +42,9 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                 print(f"Batch {k} loss: {running_loss}" )
                 k+=1
             full_preds = np.concatenate(full_preds)
+            full_preds = torch.from_numpy(full_preds)
             full_labels = np.concatenate(full_labels)
+            full_labels = torch.from_numpy(full_preds)
             curr_f1 = Calc_F1(full_preds,full_labels)
             if(curr_f1>best_f1):
                 best_f1 = curr_f1
