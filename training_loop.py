@@ -2,8 +2,9 @@ import time
 from torchmetrics import F1Score
 import torch
 import numpy as np
+import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary",use_fourrier=False):
+def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary",use_fourrier=False,model_name = "test"):
     since = time.time()
     if(task=="binary"):
         Calc_F1 = F1Score(task="binary")
@@ -12,6 +13,7 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
 
     running_loss = 0
     best_f1 = 0
+    checkpoint_path = os.path.join(checkpoint_path, model_name+".pt")
     with open("logs","a") as f:
         for epoch in range(num_epochs):
             f.write(f'Epoch {epoch}/{num_epochs - 1}\n')
