@@ -3,7 +3,7 @@ from torchmetrics import F1Score
 import torch
 import numpy as np
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary"):
+def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary",use_fourrier=False):
     since = time.time()
     if(task=="binary"):
         Calc_F1 = F1Score(task="binary")
@@ -23,13 +23,16 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
             classifier.to(device)
             full_preds = []
             full_labels = []
-            k=1
+            # k=1
             for inputs,labels in train_dataloader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(True):
+
+                    if use_fourrier==True:
+                        inputs = torch.fft.fftn(inputs,3)
                     features = model(inputs)
                     outputs = classifier(features)
                     _,preds = torch.max(outputs,1)
@@ -39,12 +42,12 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                     loss.backward()
                     optimizer.step()
                     running_loss += loss.item() * inputs.size(0)
-                print(f"Batch {k} loss: {running_loss}" )
-                k+=1
+                # print(f"Batch {k} loss: {running_loss}" )
+                # k+=1
             full_preds = np.concatenate(full_preds)
             full_preds = torch.from_numpy(full_preds)
             full_labels = np.concatenate(full_labels)
-            full_labels = torch.from_numpy(full_preds)
+            full_labels = torch.from_numpy(full_labels)
             curr_f1 = Calc_F1(full_preds,full_labels)
             if(curr_f1>best_f1):
                 best_f1 = curr_f1
