@@ -6,15 +6,21 @@ from torchvision.io import read_image
 from transformers import AutoImageProcessor
 image_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
 class Image_Classification_Dataset(Dataset):
-    def __init__(self,train_data_dir,task="Binary"):
+    def __init__(self,train_data_dir,task="Binary",val=False,val_labels = None):
         super().__init__()
-        train_tsv_path = os.path.join(train_data_dir,"image_labels.tsv")
-        train_df = pd.read_csv(train_tsv_path,sep="\t")
-        self.img_dirs = np.array(train_df.iloc[:,0].apply(lambda x: x.replace("image_class/",train_data_dir)))
-        if(task=="Binary"):
-            self.img_labels = np.array(train_df.iloc[:,1])
-        elif(task=="Multiclass"):
-            self.img_labels = np.array(train_df.iloc[:,2])
+        if(val==True):
+            val_tsv_path = os.path.join(train_data_dir,"val_images.tsv")
+            val_df = pd.read_csv(val_tsv_path,sep="\t")
+            self.img_dirs = np.array(val_df.iloc[:,0].apply(lambda x: x.replace("image_class/",train_data_dir)))
+            self.img_labels = val_labels 
+        else:
+            train_tsv_path = os.path.join(train_data_dir,"image_labels.tsv")
+            train_df = pd.read_csv(train_tsv_path,sep="\t")
+            self.img_dirs = np.array(train_df.iloc[:,0].apply(lambda x: x.replace("image_class/",train_data_dir)))
+            if(task=="Binary"):
+                self.img_labels = np.array(train_df.iloc[:,1])
+            elif(task=="Multiclass"):
+                self.img_labels = np.array(train_df.iloc[:,2])
     def __len__(self):
         return len(self.img_labels)
     def __getitem__(self,idx):
