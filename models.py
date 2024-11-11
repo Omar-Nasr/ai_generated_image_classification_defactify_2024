@@ -20,7 +20,7 @@ def train_swin(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,va
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task="Binary",val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
-        model_trained = train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=True,model_name="swin",val_dataloader=val_dataloader)
+        model_trained = train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=False,model_name="swin",val_dataloader=val_dataloader)
     else:
-        model_trained = train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=True,model_name="swin")
+        model_trained = train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=False,model_name="swin")
     return model_trained
