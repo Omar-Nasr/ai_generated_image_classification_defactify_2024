@@ -79,6 +79,10 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                     running_loss += loss.item() * inputs.size(0)
                     val_preds.append(preds.cpu())
                     val_labels.append(labels.cpu())
+                val_preds = np.concatenate(val_preds)
+                val_labels = np.concatenate(val_labels)
+                val_preds = torch.from_numpy(val_preds)
+                val_labels = torch.from_numpy(val_labels)
                 curr_f1 = Calc_F1(val_preds,val_labels)
                 if(curr_f1>best_val_f1):
                     best_f1 = curr_f1
