@@ -36,6 +36,7 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
 
                     if use_fourrier==True:
                         inputs = torch.fft.fftn(inputs,3)
+                        inputs = inputs.abs()
                     features = model(inputs)
                     outputs = classifier(features)
                     _,preds = torch.max(outputs,1)
