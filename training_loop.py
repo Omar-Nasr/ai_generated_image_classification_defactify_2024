@@ -73,7 +73,10 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                     inputs = inputs.to(device)
                     labels = labels.to(device)
                     if(use_fourrier==True):
+                        inputs = inputs.reshape(batch_sz,224,224,3)
                         inputs = torch.fft.fftn(inputs,3)
+                        inputs = inputs.abs()
+                        inputs = inputs.reshape(batch_sz,3,224,224)
                     features = model(inputs)
                     outputs = classifier(features)
                     loss = criterion(outputs,labels)
