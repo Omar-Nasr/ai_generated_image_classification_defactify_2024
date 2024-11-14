@@ -35,10 +35,10 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                 with torch.set_grad_enabled(True):
 
                     if use_fourrier==True:
-                        print(inputs.size)
+                        print(inputs.shape())
                         inputs = torch.fft.fftn(inputs,3)
                         inputs = inputs.abs()
-                        print(inputs.size)
+                        print(inputs.shape())
                     features = model(inputs)
                     outputs = classifier(features)
                     _,preds = torch.max(outputs,1)
