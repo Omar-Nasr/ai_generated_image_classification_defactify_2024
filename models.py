@@ -3,14 +3,25 @@ from data_handler import Image_Classification_Dataset
 from torch.utils.data import DataLoader
 from torchvision import models
 import torch
-def train_swin(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="binary"):
-    model = models.swin_v2_b(pretrained=True)
+from adopt import ADOPT
+def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="binary",model_name="swin",optimizer_name="adam"):
+    if(model_name=="swin"):
+        model = models.swin_v2_b(pretrained=True)
+    elif(model_name=="vit"):
+        model = models.vit_l_32(pretrained=True)
+    elif(model_name=="convnext"):
+        model = models.convnext_large(pretrained=True)
+    else:
+        model = models.vgg16_bn(pretrained=True)
     from data_handler import Image_Classification_Dataset
     from torch.utils.data import DataLoader
     img_dataset = Image_Classification_Dataset(train_data_dir)
 
     train_dataloader = DataLoader(img_dataset,batch_sz,num_workers=4)
-    optimizer = torch.optim.Adam(params=model.parameters(),lr=1e-5)
+    if(optimizer_name=="adam"):
+        optimizer = torch.optim.Adam(params=model.parameters(),lr=1e-5)
+    else:
+        optimizer = ADOPT(params=model.parameters(),lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
     criterion = torch.nn.CrossEntropyLoss()
     if(task=="binary"):
