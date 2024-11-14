@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary",use_fourrier=False,model_name = "test",val_dataloader=None):
+def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
     since = time.time()
     if(task=="binary"):
         Calc_F1 = F1Score(task="binary")
@@ -35,10 +35,10 @@ def train_model(model,criterion,optimizer,scheduler,train_dataloader,classifier,
                 with torch.set_grad_enabled(True):
 
                     if use_fourrier==True:
-                        print(inputs.shape)
+                        inputs = inputs.reshape(batch_sz,224,224,3)
                         inputs = torch.fft.fftn(inputs,3)
                         inputs = inputs.abs()
-                        print(inputs.shape)
+                        inputs = inputs.reshape(batch_sz,3,224,224)
                     features = model(inputs)
                     outputs = classifier(features)
                     _,preds = torch.max(outputs,1)
