@@ -28,7 +28,7 @@ class Image_Classification_Dataset(Dataset):
             elif(task=="Multiclass"):
                 self.img_labels = np.array(train_df.iloc[:,2])
     def __len__(self):
-        return len(self.img_labels)
+        return len(self.img_dirs)
     def __getitem__(self,idx):
         image_path = self.img_dirs[idx]
         image = read_image(image_path)
