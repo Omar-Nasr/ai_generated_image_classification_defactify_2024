@@ -8,11 +8,17 @@ image_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-22
 class Image_Classification_Dataset(Dataset):
     def __init__(self,train_data_dir,task="Binary",val=False,val_labels = None,test=False):
         super().__init__()
+        self.test = test
         if(val==True):
             val_tsv_path = os.path.join(train_data_dir,"val_images.tsv")
             val_df = pd.read_csv(val_tsv_path,sep="\t",header=None)
             self.img_dirs = np.array(val_df.iloc[:,0].apply(lambda x: x.replace("image_class/",train_data_dir)))
             self.img_labels = val_labels 
+        elif(test==True):
+            test_tsv_path = os.path.join(train_data_dir,"test_images.tsv")
+            test_df = pd.read_csv(test_tsv_path,sep="\t",header=None)
+            self.img_dirs = np.array(test_df.iloc[:,0].apply(lambda x: x.replace("image_class/",train_data_dir)))
+            self.img_labels = None
         else:
             train_tsv_path = os.path.join(train_data_dir,"image_labels.tsv")
             train_df = pd.read_csv(train_tsv_path,sep="\t",header=None)
@@ -25,10 +31,13 @@ class Image_Classification_Dataset(Dataset):
         return len(self.img_labels)
     def __getitem__(self,idx):
         image_path = self.img_dirs[idx]
-        label = self.img_labels[idx]
         image = read_image(image_path)
         image = image_processor(images=image,return_tensors="pt")['pixel_values'][0]
-        return image,label
+        if(self.test==False):
+            label = self.img_labels[idx]
+            return image,label
+        else:
+            return image
 
 
 
