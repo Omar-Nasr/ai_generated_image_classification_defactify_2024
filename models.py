@@ -15,7 +15,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         model = models.vgg16_bn(pretrained=True)
     from data_handler import Image_Classification_Dataset
     from torch.utils.data import DataLoader
-    img_dataset = Image_Classification_Dataset(train_data_dir)
+    img_dataset = Image_Classification_Dataset(train_data_dir,task=task)
 
     train_dataloader = DataLoader(img_dataset,batch_sz,num_workers=4)
     if(optimizer_name=="adam"):
