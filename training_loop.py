@@ -4,9 +4,9 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,optimizer2,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
     since = time.time()
-    if(task=="binary"):
+    if(task=="Binary"):
         Calc_F1 = F1Score(task="binary")
     else:
         Calc_F1 = F1Score(task="multiclass",num_classes=6)
