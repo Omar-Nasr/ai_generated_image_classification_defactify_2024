@@ -13,16 +13,9 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         model = models.convnext_large(pretrained=True)
     else:
         model = models.vgg16_bn(pretrained=True)
-    from data_handler import Image_Classification_Dataset
-    from torch.utils.data import DataLoader
     img_dataset = Image_Classification_Dataset(train_data_dir,task=task)
 
     train_dataloader = DataLoader(img_dataset,batch_sz,num_workers=4,shuffle=True)
-    if(optimizer_name=="adam"):
-        optimizer = torch.optim.Adam(params=model.parameters(),lr=1e-5)
-    else:
-        optimizer = ADOPT(params=model.parameters(),lr=1e-5)
-
     criterion = torch.nn.CrossEntropyLoss()
     if(task=="Binary"):
         classifier = torch.nn.Linear(1000,2)
@@ -34,8 +27,8 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
     else:
         optimizer = ADOPT(params=model.parameters(),lr=1e-5)
         optimizer2 = ADOPT(params=classifier.parameters(),lr=1e-5)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=5)
-    scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=5)
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
+    scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task=task,val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
