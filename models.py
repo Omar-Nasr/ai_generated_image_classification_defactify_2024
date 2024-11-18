@@ -17,7 +17,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
     from torch.utils.data import DataLoader
     img_dataset = Image_Classification_Dataset(train_data_dir,task=task)
 
-    train_dataloader = DataLoader(img_dataset,batch_sz,num_workers=4)
+    train_dataloader = DataLoader(img_dataset,batch_sz,num_workers=4,shuffle=True)
     if(optimizer_name=="adam"):
         optimizer = torch.optim.Adam(params=model.parameters(),lr=1e-5)
     else:
