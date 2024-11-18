@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,optimizer2,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
     since = time.time()
     if(task=="Binary"):
         Calc_F1 = F1Score(task="binary")
@@ -50,6 +50,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,train_dataloader,
                     loss.backward()
                     optimizer.step()
                     optimizer2.step()
+                    scheduler.step()
+                    scheduler2.step()
                     running_loss += loss.item() * inputs.size(0)
                 # print(f"Batch {k} loss: {running_loss}" )
                 # k+=1

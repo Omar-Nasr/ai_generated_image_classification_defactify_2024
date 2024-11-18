@@ -22,7 +22,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         optimizer = torch.optim.Adam(params=model.parameters(),lr=1e-5)
     else:
         optimizer = ADOPT(params=model.parameters(),lr=1e-5)
-    scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
+
     criterion = torch.nn.CrossEntropyLoss()
     if(task=="Binary"):
         classifier = torch.nn.Linear(1000,2)
@@ -34,10 +34,12 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
     else:
         optimizer = ADOPT(params=model.parameters(),lr=1e-5)
         optimizer2 = ADOPT(params=classifier.parameters(),lr=1e-5)
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=5)
+    scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=5)
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task=task,val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
-        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz)
+        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz)
     else:
-        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=use_fourier,model_name=model_name,batch_sz=batch_sz)
+        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=use_fourier,model_name=model_name,batch_sz=batch_sz)
     return model_trained
