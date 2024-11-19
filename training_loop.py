@@ -3,7 +3,8 @@ from torchmetrics import F1Score
 import torch
 import numpy as np
 import os 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+import torch_xla.core.xla_model as xm
+device = xm.xla_device()
 def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
     since = time.time()
     if(task=="Binary"):
@@ -52,6 +53,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                     optimizer2.step()
                     scheduler.step()
                     scheduler2.step()
+                    xm.mark_step()
                     running_loss += loss.item() * inputs.size(0)
                 # print(f"Batch {k} loss: {running_loss}" )
                 # k+=1
