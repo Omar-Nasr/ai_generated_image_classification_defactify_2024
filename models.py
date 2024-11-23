@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from torchvision import models
 import torch
 from adopt import ADOPT
-def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False):
+def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7):
     if(model_name=="swin"):
         model = models.swin_v2_b(pretrained=True)
     elif(model_name=="vit"):
@@ -22,11 +22,11 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
     else:
         classifier = torch.nn.Linear(1000,6)
     if(optimizer_name=="adam"):
-        optimizer = torch.optim.Adam(params=model.parameters(),lr=1e-5)
-        optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=1e-5)
+        optimizer = torch.optim.Adam(params=model.parameters(),lr=lr)
+        optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr)
     else:
-        optimizer = ADOPT(params=model.parameters(),lr=1e-5)
-        optimizer2 = ADOPT(params=classifier.parameters(),lr=1e-5)
+        optimizer = ADOPT(params=model.parameters(),lr=lr)
+        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr)
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
     scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
     if(val==True):
