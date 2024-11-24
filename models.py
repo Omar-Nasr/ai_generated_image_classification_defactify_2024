@@ -23,10 +23,10 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         classifier = torch.nn.Linear(1000,6)
     if(optimizer_name=="adam"):
         optimizer = torch.optim.Adam(params=model.parameters(),lr=lr)
-        optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr)
+        optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr*1000)
     else:
         optimizer = ADOPT(params=model.parameters(),lr=lr)
-        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr)
+        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr*1000)
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
     scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
     if(val==True):
