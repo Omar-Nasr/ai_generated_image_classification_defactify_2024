@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False):
     since = time.time()
     if(task=="Binary"):
         Calc_F1 = F1Score(task="binary")
@@ -30,7 +30,12 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
             for inputs,labels in train_dataloader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                optimizer.zero_grad()
+
+                if(fine_tune!=True):
+                    optimizer.zero_grad()
+                else:
+                    for param in model.parameters():
+                        param.requires_grad = False
                 optimizer2.zero_grad()
 
                 with torch.set_grad_enabled(True):
@@ -48,10 +53,12 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                     full_labels.append(labels.cpu())
                     loss = criterion(outputs,labels)
                     loss.backward()
-                    optimizer.step()
+                    if(fine_tune!=True):
+                        optimizer.step()
                     optimizer2.step()
-                    scheduler.step()
-                    scheduler2.step()
+                    if(fine_tune!=True):
+                        scheduler.step(loss)
+                    scheduler2.step(loss)
                     running_loss += loss.item() * inputs.size(0)
                 # print(f"Batch {k} loss: {running_loss}" )
                 # k+=1
