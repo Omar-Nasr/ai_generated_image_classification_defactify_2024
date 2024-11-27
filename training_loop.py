@@ -57,8 +57,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                         optimizer.step()
                     optimizer2.step()
                     if(fine_tune!=True):
-                        scheduler.step(loss)
-                    scheduler2.step(loss)
+                        scheduler.step()
+                    scheduler2.step()
                     running_loss += loss.item() * inputs.size(0)
                 # print(f"Batch {k} loss: {running_loss}" )
                 # k+=1

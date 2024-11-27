@@ -23,12 +23,14 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         classifier = torch.nn.Linear(1000,6)
     if(optimizer_name=="adam"):
         optimizer = torch.optim.Adam(params=model.parameters(),lr=lr)
-        optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr*1000)
+        optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr*100)
     else:
         optimizer = ADOPT(params=model.parameters(),lr=lr)
-        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr*1000)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min')
-    scheduler2 = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer2, mode='min') 
+        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr*100)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min')
+    # scheduler2 = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer2, mode='min') 
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.001,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
+    scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.1,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task=task,val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
