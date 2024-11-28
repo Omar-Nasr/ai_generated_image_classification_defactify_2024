@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None):
     since = time.time()
     if(task=="Binary"):
         Calc_F1 = F1Score(task="binary")
@@ -103,6 +103,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                 val_preds = torch.from_numpy(val_preds)
                 val_labels = torch.from_numpy(val_labels)
                 curr_f1 = Calc_F1(val_preds,val_labels)
+                if(trial!=None):
+                    trial.report(curr_f1, epoch)
                 if(curr_f1>best_val_f1):
                     best_f1 = curr_f1
                     best_val_f1 = curr_f1
@@ -121,7 +123,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
         f.write(f'Best F1: {best_f1} after {num_epochs} Epochs')
         print(f'Best F1: {best_f1} after {num_epochs} Epochs')      
         model.load_state_dict(torch.load(checkpoint_path))
-        return model,classifier
+        return model,classifier,best_val_f1
 
 
         
