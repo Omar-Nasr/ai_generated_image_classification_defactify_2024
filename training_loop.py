@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourrier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None):
     since = time.time()
     if(task=="Binary"):
         Calc_F1 = F1Score(task="binary")
@@ -37,15 +37,12 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                     for param in model.parameters():
                         param.requires_grad = False
                 optimizer2.zero_grad()
-
-                with torch.set_grad_enabled(True):
-
-                    if use_fourrier==True:
-                        first_dim = inputs.shape[0]
-                        inputs = inputs.reshape(first_dim,224,224,3)
-                        inputs = torch.fft.fftn(inputs,3)
-                        inputs = inputs.abs()
-                        inputs = inputs.reshape(first_dim,3,224,224)
+                if use_fourier==True:
+                    first_dim = inputs.shape[0]
+                    inputs = inputs.reshape(first_dim,224,224,3)
+                    inputs = torch.fft.fftn(inputs,3)
+                    inputs = inputs.abs()
+                    inputs = inputs.reshape(first_dim,3,224,224)
                     features = model(inputs)
                     outputs = classifier(features)
                     _,preds = torch.max(outputs,1)
