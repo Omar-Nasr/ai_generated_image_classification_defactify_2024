@@ -38,7 +38,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task=task,val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
-        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,trial=trial)
+        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,trial=trial)
     else:
-        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourrier=use_fourier,model_name=model_name,batch_sz=batch_sz,fine_tune=fine_tune)
+        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,batch_sz=batch_sz,fine_tune=fine_tune)
     return model_trained
