@@ -81,7 +81,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                 for inputs,labels in val_dataloader:
                     inputs = inputs.to(device)
                     labels = labels.to(device)
-                    if(use_fourrier==True):
+                    if(use_fourier==True):
                         first_dim = inputs.shape[0]
                         inputs = inputs.reshape(first_dim,224,224,3)
                         inputs = torch.fft.fftn(inputs,3)

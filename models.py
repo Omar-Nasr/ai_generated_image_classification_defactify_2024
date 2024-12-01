@@ -5,7 +5,7 @@ from torchvision import models
 import torch
 from torch import nn
 from adopt import ADOPT
-def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7,lr2=1e-4,fine_tune=False,trial=None,dropout_rate=0.18,num_classes=6):
+def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7,lr2=1e-4,fine_tune=False,trial=None,dropout_rate=0.18,num_classes=6,freeze_number=0):
     if(model_name=="swin"):
         model = models.swin_v2_b(pretrained=True)
     elif(model_name=="vit"):
@@ -22,6 +22,11 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         classifier = torch.nn.Linear(1000,2)
     else:
         classifier = nn.Sequential(nn.Dropout(dropout_rate),nn.Linear(1000,1000),nn.GELU(),nn.Dropout(dropout_rate),nn.Linear(1000,num_classes))
+    i = 0 
+    for param in model.parameters():
+        if(i==freeze_number):
+            break
+        param.requires_grad=False
   
     if(optimizer_name=="adam"):
         optimizer = torch.optim.Adam(params=model.parameters(),lr=lr)
