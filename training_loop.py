@@ -124,14 +124,15 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
 
 
 def train_classical_classifier(backbone,train_dataloader,val_dataloader,batch_sz,num_epochs):        
-    X_Train=[]
-    Y_Train = []
+    features_list = np.array([])
+    labels_list = np.array([])
     for inputs,labels in train_dataloader:
         features = backbone(inputs)
         features = features.detach().numpy()
+        np.append(features_list,features)
         labels.detach().numpy()
-        X_Train = np.concatenate((X_Train,features))
-        Y_Train = np.concatenate((Y_Train,labels))
-    print(X_Train.shape)
+        np.append(labels_list,labels)
+    print(labels_list.shape)
+    print(features_list.shape)
     return 0
 
