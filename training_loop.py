@@ -129,7 +129,7 @@ def train_classical_classifier(backbone,train_dataloader,val_dataloader,batch_sz
     for inputs,labels in train_dataloader:
         features = backbone(inputs)
         features = features.detach().numpy()
-        labels.detach.numpy()
+        labels.detach().numpy()
         X_Train = np.concatenate(X_Train,features)
         Y_Train = np.concatenate(Y_Train,labels)
     print(X_Train.shape)
