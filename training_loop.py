@@ -1,5 +1,6 @@
 import time 
 from torchmetrics import F1Score
+import xgboost as xgb
 import torch
 import numpy as np
 import os 
@@ -13,7 +14,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
 
     best_f1 = 0
     best_val_f1=0
-    checkpoint_path = os.path.join(checkpoint_path, model_name+".pt")
+    model_path = os.path.join(checkpoint_path, model_name+"best.pt")
+    classifier_path = os.path.join(checkpoint_path, "best_classifier.pt")
     with open("logs","a") as f:
         for epoch in range(num_epochs):
             running_loss = 0
@@ -66,7 +68,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
             curr_f1 = Calc_F1(full_preds,full_labels)
             if(curr_f1>best_f1):
                 best_f1 = curr_f1
-                torch.save(model.state_dict(),checkpoint_path)
+                torch.save(model.state_dict(),model_path)
+                torch.save(model.state_dict(),classifier_path)
 
             f.write(f'Epoch ${epoch} Training Loss: ${running_loss} \n')
             print(f'Epoch ${epoch} Training Loss: ${running_loss} \n')
@@ -120,19 +123,48 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
         f.write(f'Best F1: {best_f1} after {num_epochs} Epochs')
         print(f'Best F1: {best_f1} after {num_epochs} Epochs')      
         model.load_state_dict(torch.load(checkpoint_path))
-        return model,classifier,best_val_f1
+        return model,classifier
 
 
-def train_classical_classifier(backbone,train_dataloader,val_dataloader,batch_sz,num_epochs):        
+def train_classical_classifier(backbone,train_dataloader,val_dataloader,batch_sz,num_epochs,test_dataloader):        
     features_list = np.array([])
     labels_list = np.array([])
+    idx=0
     for inputs,labels in train_dataloader:
+
         features = backbone(inputs)
         features = features.detach().numpy()
-        np.append(features_list,features)
+        if(idx==0):
+            features_list = np.array(features)
+        else:
+            features_list = np.append(features_list,features)
         labels.detach().numpy()
-        np.append(labels_list,labels)
-    print(labels_list.shape)
-    print(features_list.shape)
+        if(idx==0):
+            labels_list = np.array(labels)
+        else:
+            labels_list = np.append(labels_list,labels)
+        idx+=1
+    X_Train=features_list 
+    Y_Train=labels_list
+    idx=0
+    for inputs,labels in val_dataloader:
+        features = backbone(inputs)
+        features = features.detach().numpy()
+        if(idx==0):
+            features_list = np.array(features)
+        else:
+            features_list = np.append(features_list,features)
+        labels.detach().numpy()
+        if(idx==0):
+            labels_list = np.array(labels)
+        else:
+            labels_list = np.append(labels_list,labels)
+        idx+=1
+    X_Val = features_list
+    Y_Val = labels_list
+    clf = xgb.XGBClassifier(tree_method="hist", early_stopping_rounds=2)
+    clf.fit(X_Train, Y_Train, eval_set=[(X_Val, Y_Val)])
+    clf.save_model("clf.json")
     return 0
+
 
