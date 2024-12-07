@@ -71,13 +71,11 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
                     img_dataset,
                     batch_sz,
                     sampler=torch.utils.data.SubsetRandomSampler(train_idx),
-                    shuffle=True
                 )
                 test_dataloader = DataLoader(
                     img_dataset,
                     batch_sz,
                     sampler=torch.utils.data.SubsetRandomSampler(test_idx),
-                    shuffle=True
                 )
                 model,classifier =  train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=test_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,trial=trial)
                 model_trained=model,classifier
