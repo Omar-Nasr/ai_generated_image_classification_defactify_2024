@@ -41,9 +41,9 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr2)
     else:
         optimizer = ADOPT(params=model.parameters(),lr=lr)
-        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr*100)
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min')
-    # scheduler2 = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer2, mode='min') 
+        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr2)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min')
+    scheduler2 = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer2, mode='min') 
     # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.001,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
     # scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.1,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
     scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)

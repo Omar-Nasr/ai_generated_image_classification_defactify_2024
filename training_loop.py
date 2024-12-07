@@ -55,9 +55,9 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                 if(fine_tune!=True):
                     optimizer.step()
                 optimizer2.step()
-                if(fine_tune!=True):
-                    scheduler.step()
-                scheduler2.step()
+                # if(fine_tune!=True):
+                #     scheduler.step()
+                # scheduler2.step()
                 running_loss += loss.item() * inputs.size(0)
                 # print(f"Batch {k} loss: {running_loss}" )
                 # k+=1
@@ -98,6 +98,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                     running_loss += loss.item() * inputs.size(0)
                     val_preds.append(preds.cpu())
                     val_labels.append(labels.cpu())
+                scheduler.step(running_loss)
+                scheduler2.step(running_loss)
                 val_preds = np.concatenate(val_preds)
                 val_labels = np.concatenate(val_labels)
                 val_preds = torch.from_numpy(val_preds)
