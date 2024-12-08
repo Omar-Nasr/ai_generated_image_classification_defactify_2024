@@ -66,6 +66,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                 # k+=1
                 if(test==True):
                     break
+            running_loss = running_loss/len(train_dataloader)
             full_preds = np.concatenate(full_preds)
             full_preds = torch.from_numpy(full_preds)
             full_labels = np.concatenate(full_labels)
@@ -107,6 +108,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                         break
                 scheduler.step(running_loss)
                 scheduler2.step(running_loss)
+                running_loss = running_loss/len(val_dataloader)
                 val_preds = np.concatenate(val_preds)
                 val_labels = np.concatenate(val_labels)
                 val_preds = torch.from_numpy(val_preds)

@@ -99,6 +99,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
                     running_loss += loss.item() * inputs.size(0)
                     val_preds.append(preds.cpu())
                     val_labels.append(labels.cpu())
+                running_loss = running_loss/len(val_dataloader)
                 val_preds = np.concatenate(val_preds)
                 val_labels = np.concatenate(val_labels)
                 val_preds = torch.from_numpy(val_preds)
