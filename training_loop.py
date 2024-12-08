@@ -110,8 +110,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                 if(curr_f1>best_val_f1):
                     best_f1 = curr_f1
                     best_val_f1 = curr_f1
-                    torch.save(model.state_dict(),model_path)
-                    torch.save(classifier.state_dict(),classifier_path)
+                    torch.save(model.state_dict(),checkpoint_path)
                 f.write(f'Epoch ${epoch} Val Loss: ${running_loss} \n')
                 print(f'Epoch ${epoch} Val Loss: ${running_loss} \n')
 
@@ -125,8 +124,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
 
         f.write(f'Best F1: {best_f1} after {num_epochs} Epochs')
         print(f'Best F1: {best_f1} after {num_epochs} Epochs')      
-        model.load_state_dict(torch.load(model_path))
-        classifier.load_state_dict(torch.load(classifier_path))
+        model.load_state_dict(torch.load(checkpoint_path))
         return model,classifier
 
 
