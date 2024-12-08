@@ -132,7 +132,7 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
 
         f.write(f'Best F1: {best_f1} after {num_epochs} Epochs')
         print(f'Best F1: {best_f1} after {num_epochs} Epochs')      
-        model.load_state_dict(torch.load(checkpoint_path))
+        model.load_state_dict(torch.load(model_path))
         classifier.load_state_dict(torch.load(classifier_path))
         return model,classifier
 
