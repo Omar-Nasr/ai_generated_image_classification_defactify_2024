@@ -5,8 +5,11 @@ import torch
 import numpy as np
 import os 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None,test=False):
     since = time.time()
+    if(test==True):
+        batch_sz=1
+        num_epochs=1
     if(task=="Binary"):
         Calc_F1 = F1Score(task="binary")
     else:
@@ -61,6 +64,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                 running_loss += loss.item() * inputs.size(0)
                 # print(f"Batch {k} loss: {running_loss}" )
                 # k+=1
+                if(test==True):
+                    break
             full_preds = np.concatenate(full_preds)
             full_preds = torch.from_numpy(full_preds)
             full_labels = np.concatenate(full_labels)
@@ -98,6 +103,8 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                     running_loss += loss.item() * inputs.size(0)
                     val_preds.append(preds.cpu())
                     val_labels.append(labels.cpu())
+                    if(test==True):
+                        break
                 scheduler.step(running_loss)
                 scheduler2.step(running_loss)
                 val_preds = np.concatenate(val_preds)
