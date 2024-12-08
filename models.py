@@ -101,17 +101,17 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
                     val_labels.append(labels.cpu())
                     val_preds = np.concatenate(val_preds)
                     val_labels = np.concatenate(val_labels)
-                    val_preds = torch.from_numpy(val_preds)
-                    val_labels = torch.from_numpy(val_labels)
-                    curr_f1 = Calc_F1(val_preds,val_labels)
-                    if(curr_f1>best_val_f1):
-                        best_f1 = curr_f1
-                        best_val_f1 = curr_f1
-                        model_path = os.path.join(checkpoint_path, model_name+".pt")
-                        classifier_path = os.path.join(checkpoint_path, "classifier.pt")
-                        torch.save(model.state_dict(),model_path)
-                        torch.save(classifier.state_dict(),classifier_path)
-                        model_trained=model,classifier
+                val_preds = torch.from_numpy(val_preds)
+                val_labels = torch.from_numpy(val_labels)
+                curr_f1 = Calc_F1(val_preds,val_labels)
+                if(curr_f1>best_val_f1):
+                    best_f1 = curr_f1
+                    best_val_f1 = curr_f1
+                    model_path = os.path.join(checkpoint_path, model_name+".pt")
+                    classifier_path = os.path.join(checkpoint_path, "classifier.pt")
+                    torch.save(model.state_dict(),model_path)
+                    torch.save(classifier.state_dict(),classifier_path)
+                    model_trained=model,classifier
 
 
     else:
