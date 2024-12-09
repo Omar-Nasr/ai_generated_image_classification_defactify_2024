@@ -58,7 +58,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         elif(k_fold!=True):
             model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,trial=trial)
         else:
-            kf = KFold(n_splits=5, shuffle=True)
+            kf = KFold(n_splits=3, shuffle=True)
             best_val_f1=0
             Calc_F1 = F1Score(task="multiclass",num_classes=6)
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -105,6 +105,12 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
                 val_preds = torch.from_numpy(val_preds)
                 val_labels = torch.from_numpy(val_labels)
                 curr_f1 = Calc_F1(val_preds,val_labels)
+
+                with open("logs","a") as f:
+                    f.write(f'Fold ${fold} Test F1_Score {curr_f1} Best F1: {best_val_f1}')
+                    print(f'Fold ${fold} Val F1_Score {curr_f1} Best F1: {best_val_f1}')
+
+
                 if(curr_f1>best_val_f1):
                     best_f1 = curr_f1
                     best_val_f1 = curr_f1
