@@ -10,8 +10,10 @@ from torchmetrics import F1Score
 import os
 from sklearn.model_selection import KFold
 import numpy as np
-def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7,lr2=1e-4,fine_tune=False,trial=None,dropout_rate=0.18,num_classes=6,freeze_number=0,classical_ml=False,k_fold=False):
-    if(model_name=="swin"):
+def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7,lr2=1e-4,fine_tune=False,trial=None,dropout_rate=0.18,num_classes=6,freeze_number=0,classical_ml=False,k_fold=False,passed_model=None,passed_classifier=None):
+    if(passed_model!=None):
+        model=passed_model
+    elif(model_name=="swin"):
         model = models.swin_v2_b(pretrained=True)
     elif(model_name=="vit"):
         model = models.vit_l_32(pretrained=True)
@@ -26,7 +28,9 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
 
     # Initialize the model and optimizer
     criterion = torch.nn.CrossEntropyLoss()
-    if(task=="Binary"):
+    if(passed_classifier!=None):
+        classifier=passed_classifier
+    elif(task=="Binary"):
         classifier = torch.nn.Linear(1000,2)
     else:
         classifier = nn.Sequential(nn.Dropout(dropout_rate),nn.Linear(1000,1000),nn.GELU(),nn.Dropout(dropout_rate),nn.Linear(1000,num_classes))
@@ -45,9 +49,9 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min')
     scheduler2 = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer2, mode='min') 
     # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.001,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
-    # scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.1,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
-    scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
-    scheduler2 = torch.optim.lr_scheduler.ConstantLR(optimizer2)
+    # # scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=0.1,steps_per_epoch=len(train_dataloader),epochs=num_epochs)
+    # scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
+    # scheduler2 = torch.optim.lr_scheduler.ConstantLR(optimizer2)
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task=task,val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
