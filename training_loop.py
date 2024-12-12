@@ -108,6 +108,10 @@ def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_
                         break
                 scheduler.step(running_loss)
                 scheduler2.step(running_loss)
+                for param in model.parameters():
+                    f.write(param.data)
+                for param in classifier.parameters():
+                    f.write(param.data)
                 running_loss = running_loss/len(val_dataloader)
                 val_preds = np.concatenate(val_preds)
                 val_labels = np.concatenate(val_labels)
