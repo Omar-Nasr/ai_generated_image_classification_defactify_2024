@@ -4,14 +4,9 @@ import xgboost as xgb
 import torch
 import numpy as np
 import os 
-import torch_xla
-import torch_xla.core.xla_model as xm
-def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None,test=False,tpu_training=False):
+def train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task="Binary",use_fourier=False,model_name = "test",val_dataloader=None,batch_sz=16,fine_tune=False,trial=None,test=False):
 
-    if(tpu_training==False):
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    else:
-        device = 
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     since = time.time()
     if(test==True):
         batch_sz=1
