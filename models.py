@@ -25,10 +25,12 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
         optimizer = torch.optim.Adam(params=model.parameters(),lr=lr)
         optimizer2 = torch.optim.Adam(params=classifier.parameters(),lr=lr)
     else:
-        optimizer = ADOPT(params=model.parameters(),lr=lr)
-        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
-    scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
+        optimizer = ADOPT(params=model.parameters(),lr=lr,weight_decay=0.1)
+        optimizer2 = ADOPT(params=classifier.parameters(),lr=lr,weight_decay=0.1)
+    # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
+    # scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer2,0.01,steps_per_epoch = len(train_dataloader),epochs=num_epochs)
+    scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer)
+    scheduler2 = torch.optim.lr_scheduler.ConstantLR(optimizer2)
     if(val==True):
         val_dataset = Image_Classification_Dataset(val_data_dir,task=task,val=True,val_labels=val_labels)
         val_dataloader = DataLoader(val_dataset,batch_sz,num_workers=4)
