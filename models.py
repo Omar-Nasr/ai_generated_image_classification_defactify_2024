@@ -10,7 +10,7 @@ from torchmetrics import F1Score
 import os
 from sklearn.model_selection import KFold
 import numpy as np
-def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7,lr2=1e-4,fine_tune=False,trial=None,dropout_rate=0.18,num_classes=6,freeze_number=0,classical_ml=False,k_fold=False,passed_model=None,passed_classifier=None,test_run=False):
+def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=None,val_labels=None,val=False,batch_sz=16,task="Binary",model_name="swin",optimizer_name="adam",use_fourier=False,lr=1e-7,lr2=1e-4,fine_tune=False,trial=None,dropout_rate=0.18,num_classes=6,freeze_number=0,classical_ml=False,k_fold=False,passed_model=None,passed_classifier=None,test_run=False,tpu_training=False):
     if(passed_model!=None):
         model=passed_model
     elif(model_name=="swin"):
@@ -60,9 +60,9 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
             # model.eval()
             # model_trained=train_classical_classifier(model,train_dataloader,val_dataloader,batch_sz,num_epochs)
         elif(k_fold!=True):
-            model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,test=test_run)
+            model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=val_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,test=test_run,tpu_training=tpu_training)
         else:
-            kf = KFold(n_splits=3, shuffle=True)
+            kf = KFold(n_splits=5, shuffle=True)
             best_val_f1=0
             Calc_F1 = F1Score(task="multiclass",num_classes=6)
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -81,7 +81,7 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
                     batch_sz,
                     sampler=torch.utils.data.SubsetRandomSampler(test_idx),
                 )
-                model,classifier =  train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=test_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,test=test_run)
+                model,classifier =  train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,val_dataloader=test_dataloader,batch_sz=batch_sz,fine_tune=fine_tune,test=test_run,tpu_training=tpu_training)
                 model_trained=model,classifier
                 val_preds = []
                 val_labels = []
@@ -126,5 +126,5 @@ def train_classifier(train_data_dir,checkpoint_path,num_epochs=10,val_data_dir=N
 
 
     else:
-        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,batch_sz=batch_sz,fine_tune=fine_tune)
+        model_trained = train_model(model,criterion,optimizer,optimizer2,scheduler,scheduler2,train_dataloader,classifier,num_epochs,checkpoint_path,task,use_fourier=use_fourier,model_name=model_name,batch_sz=batch_sz,fine_tune=fine_tune,tpu_training=tpu_training)
     return model_trained
